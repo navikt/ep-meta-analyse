@@ -3,7 +3,7 @@
 ```
 make generate-notebook-pdf
 ```
-Resultatet havner som en PDF i [output]
+Resultatet havner som en PDF i output: [output/Utviklingsstatistikk.pdf](output/Utviklingsstatistikk.pdf)
 
 ## Henvendelser
 
