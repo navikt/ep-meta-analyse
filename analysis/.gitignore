@@ -1,2 +1,8 @@
 commit-stats.csv
 ~$*.*
+.ipynb_checkpoints/
+
+output/
+
+# We're not concerned with repeatable builds
+poetry.lock

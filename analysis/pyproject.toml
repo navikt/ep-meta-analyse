@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "eessi-pensjon"
+version = "0.1.0"
+description = "Python tools for analysis"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.11"
+notebook = "^6.5.2"
+pandas = "^1.5.2"
+numpy = "^1.24.1"
+matplotlib = "^3.6.3"
+
+[tool.poetry.group.dev.dependencies]
+pyppeteer = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
