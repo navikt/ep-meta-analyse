@@ -7,6 +7,7 @@ help:
 
 python-bootstrap: # Setter opp miljø for analyse
 	brew install cloc
+	git config --global core.quotepath off # fikser issue med UTF-8 i filnavn https://github.com/AlDanial/cloc/issues/457
 	brew install poetry
 	poetry install
 	@make jupyter-output-filter-install
