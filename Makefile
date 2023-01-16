@@ -13,7 +13,7 @@ python-bootstrap: # Setter opp miljø for analyse
 	@make jupyter-output-filter-install
 
 jupyter-output-filter-install: # Installerer et git-filter som fjerner output i notebook'er så det ikke sjekkes inn
-	git config --local filter.jupyter-remove-output.clean 'sh -c "cd analysis; poetry run jupyter nbconvert --clear-output --to=notebook --stdin --stdout"'
+	git config --local filter.jupyter-remove-output.clean 'sh -c "poetry run jupyter nbconvert --clear-output --to=notebook --stdin --stdout"'
 
 analyse-and-update-notebook: python-bootstrap
 	poetry run jupyter nbconvert --execute --to notebook --inplace "Utviklingsstatistikk.ipynb"
