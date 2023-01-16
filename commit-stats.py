@@ -8,9 +8,9 @@ import csv
 
 startdate = datetime(2021, 1, 1)
 
-changes = gather_changes_from_subprojects(os.getcwd(), datetime.now() - startdate)
+changes = gather_changes_from_subprojects(os.getcwd() + '/..', datetime.now() - startdate)
 
-filename = "analysis/commit-stats.csv"
+filename = "output/commit-stats.csv"
 
 
 def convert(value):

@@ -67,13 +67,13 @@ def risk_from_message(message):
         return "5"
 
 
-def gather_changes_from_subprojects(folder, duration):
+def gather_changes_from_subprojects(root_dir, duration):
     hours, remainder = divmod(duration.total_seconds(), 3600)
     report_period = "%d hours" % (hours + (1 if remainder > 0 else 0))
 
     changes = []
-    for project_info in projects_info(folder):
-        for commit in project_commits(project_info, report_period):
+    for project_info in projects_info(root_dir):
+        for commit in project_commits(root_dir, project_info, report_period):
             (timestamp, hash, subject) = tuple(commit)
             changes += [{
                 "repo": project_info["path"],
@@ -88,9 +88,9 @@ def gather_changes_from_subprojects(folder, duration):
     return changes
 
 
-def project_commits(project_info, report_period):
+def project_commits(root_dir, project_info, report_period):
     commit_format_string = f"%ci€%h€%s"
-    path = project_info["path"]
+    path = root_dir + '/' + project_info["path"]
     project_changes_cmd = subprocess.run(["sh", "-c",
                                           f"git fetch >/dev/null && git log origin/HEAD --format='{commit_format_string}' --since='{report_period}'"],
                                          cwd=path, stdout=subprocess.PIPE, text=True)

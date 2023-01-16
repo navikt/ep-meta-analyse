@@ -19,10 +19,16 @@ def cloc_for(path):
 
 
 def cloc_change(path, from_date, to_date):  # --exclude-list-file=.clocignore fungerer ikke her ser det ut til
-    from_commit = Popen(f'git rev-list --before="{from_date}" origin/HEAD | head -n 1', shell=True, stdout=PIPE,
-                       cwd=path, text=True).stdout.readline().rstrip()
     to_commit = Popen(f'git rev-list --before="{to_date}" origin/HEAD | head -n 1', shell=True, stdout=PIPE,
                      cwd=path, text=True).stdout.readline().rstrip('\n')
+    if not to_commit:
+        return []
+
+    from_commit = Popen(f'git rev-list --before="{from_date}" origin/HEAD | head -n 1', shell=True, stdout=PIPE,
+                       cwd=path, text=True).stdout.readline().rstrip()
+    if not from_commit:
+        from_commit = Popen(f'git rev-list --max-parents=0 origin/HEAD | head -n 1', shell=True, stdout=PIPE,
+                            cwd=path, text=True).stdout.readline().rstrip()
     cloc_command_string = f'cloc --csv --vcs git --exclude-dir=dist,build,gradle --exclude-lang=JSON,XML --quiet --diff --git {from_commit} {to_commit}'
     cloc_command = Popen(cloc_command_string, shell=True, stdout=PIPE, cwd=path, text=True)
     if cloc_command.returncode:
@@ -36,13 +42,13 @@ def cloc_change(path, from_date, to_date):  # --exclude-list-file=.clocignore fu
     return result[1:]
 
 
-def size_data():
+def size_data(root_dir):
     today = datetime.datetime.today().strftime('%Y-%m-%d')
     size_stats = []
 
-    projects = projects_info(os.getcwd())
+    projects = projects_info(root_dir)
     for project in projects:
-        cloc_stats = cloc_for(project["path"])
+        cloc_stats = cloc_for(root_dir + '/' + project["path"])
         for row in cloc_stats:
             data = row.split(",")
             size_stats += [{
@@ -60,14 +66,14 @@ def size_data():
     return size_stats
 
 
-def change_data(tertial):
+def change_data(root_dir, tertial):
     from_date = datetime.datetime(year=int(tertial[0:4]), month=int(tertial[5])*4-3, day=1)
     to_date = from_date + relativedelta(months=4)
 
     change_stats = []
 
-    for project in projects_info(os.getcwd()):
-        cloc_stats = cloc_change(project["path"], from_date, to_date)
+    for project in projects_info(root_dir):
+        cloc_stats = cloc_change(root_dir + '/' + project["path"], from_date, to_date)
         for row in cloc_stats:
             data = row.split(",")
             change_stats += [{
