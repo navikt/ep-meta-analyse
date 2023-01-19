@@ -4,7 +4,7 @@ import os
 from datetime import timedelta
 from lib.commit_data import text_risk, gather_changes_from_subprojects
 
-changes = gather_changes_from_subprojects(os.getcwd(), timedelta(days=7, hours=10))
+changes = gather_changes_from_subprojects(os.getcwd() + '/..', timedelta(days=7, hours=10))
 
 changes.sort(key=lambda change: change['intention'])
 changes.sort(key=lambda change: change['risk'], reverse=True)
