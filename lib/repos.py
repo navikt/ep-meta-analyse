@@ -25,6 +25,6 @@ def projects_info(folder):
 def type_from_path(project):
     if project.startswith(".") or project.startswith("ep-meta-"):
         return "meta"
-    if project.startswith("eessi-pensjon-") and project != "eessi-pensjon-ui":
+    if project.startswith("eessi-pensjon-"):
         return "app"
     return "library"
