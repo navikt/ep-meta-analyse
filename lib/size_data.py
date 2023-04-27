@@ -20,15 +20,18 @@ def cloc_for(path):
 
 def cloc_change(path, from_date, to_date):  # --exclude-list-file=.clocignore fungerer ikke her ser det ut til
     to_commit = Popen(f'git rev-list --before="{to_date}" origin/HEAD | head -n 1', shell=True, stdout=PIPE,
-                     cwd=path, text=True).stdout.readline().rstrip('\n')
+                      cwd=path, text=True).stdout.readline().rstrip('\n')
     if not to_commit:
         return []
 
     from_commit = Popen(f'git rev-list --before="{from_date}" origin/HEAD | head -n 1', shell=True, stdout=PIPE,
-                       cwd=path, text=True).stdout.readline().rstrip()
+                        cwd=path, text=True).stdout.readline().rstrip()
     if not from_commit:
         from_commit = Popen(f'git rev-list --max-parents=0 origin/HEAD | head -n 1', shell=True, stdout=PIPE,
                             cwd=path, text=True).stdout.readline().rstrip()
+    if from_commit == to_commit:
+        return []
+
     cloc_command_string = f'cloc --csv --vcs git --exclude-dir=dist,build,gradle --exclude-lang=JSON,XML --quiet --diff --git {from_commit} {to_commit}'
     cloc_command = Popen(cloc_command_string, shell=True, stdout=PIPE, cwd=path, text=True)
     if cloc_command.returncode:
