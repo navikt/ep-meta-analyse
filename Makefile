@@ -14,7 +14,7 @@ python-bootstrap: # Setter opp miljø for analyse
 
 jupyter-output-filter-install: # Installerer et git-filter som fjerner output i notebook'er så det ikke sjekkes inn
 	brew install jq
-	git config --local filter.jupyter-remove-output.clean "(cat %f | jq 'del(.cells[].execution_count)' | jq 'del(.cells[].outputs[]?)' | jq 'del(.cells[].metadata.execution)' )"
+	git config --local filter.jupyter-remove-output.clean "(cat %f | jq '.cells[] |= if has(\"execution_count\") then .execution_count = null else . end' | jq 'del(.cells[].outputs[]?)' | jq 'del(.cells[].metadata[]?)')"
 	git config --local filter.jupyter-remove-output.smudge "cat"
 
 analyse-and-update-notebook: python-bootstrap
