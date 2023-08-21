@@ -9,12 +9,12 @@ python-bootstrap: # Setter opp miljø for analyse
 	brew install cloc
 	git config --global core.quotepath off # fikser issue med UTF-8 i filnavn https://github.com/AlDanial/cloc/issues/457
 	brew install poetry
-	poetry install
+	poetry update
 	@make jupyter-output-filter-install
 
 jupyter-output-filter-install: # Installerer et git-filter som fjerner output i notebook'er så det ikke sjekkes inn
 	brew install jq
-	git config --local filter.jupyter-remove-output.clean "(cat %f | jq '.cells[] |= if has(\"execution_count\") then .execution_count = null else . end' | jq 'del(.cells[].outputs[]?)' | jq 'del(.cells[].metadata[]?)')"
+	git config --local filter.jupyter-remove-output.clean "(cat %f | jq '.cells[] |= if has(\"execution_count\") then .execution_count = null else . end'  | jq 'del(.cells[].metadata[]?)' | jq 'del(.cells[].metadata.execution)' | jq 'del(.cells[].outputs[]?)')"
 	git config --local filter.jupyter-remove-output.smudge "cat"
 
 analyse-and-update-notebook: python-bootstrap
