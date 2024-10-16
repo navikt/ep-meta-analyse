@@ -8,6 +8,7 @@ changes = gather_changes_from_subprojects(os.getcwd() + '/..', timedelta(days=7,
 
 changes.sort(key=lambda change: change['intention'])
 changes.sort(key=lambda change: change['risk'], reverse=True)
+changes.sort(key=lambda change: change['branch_type'])
 changes.sort(key=lambda change: change['timestamp'])
 changes.sort(key=lambda change: change['module'])
 changes.sort(key=lambda change: change['type'])
@@ -16,7 +17,7 @@ def report_part(description, changes, filter_rule):
     print("*** " + description + " *** ")
     print()
     for change in filter(filter_rule, changes):
-        print(f'{change["timestamp"].strftime("%d-%m-%Y %H:%M")} {change["module"].rjust(22," ")} - {change["message"]}  ({text_risk(change["risk"])})')
+        print(f'{change["timestamp"].strftime("%d-%m-%Y %H:%M")} {change["module"].rjust(22," ")} * {change["branch_type"].rjust(1," ")} * - {change["message"]}  ({text_risk(change["risk"])})')
     print()
 
 

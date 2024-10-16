@@ -75,6 +75,10 @@ def gather_changes_from_subprojects(root_dir, duration):
     for project_info in projects_info(root_dir):
         for commit in project_commits(root_dir, project_info, report_period):
             (timestamp, hash, subject) = tuple(commit)
+
+            # Check if the commit is part of the 'master' or 'main' branch
+            branch_type = 'M' if is_commit_in_branch(root_dir, project_info, hash, ['master', 'main']) else 'B'
+
             changes += [{
                 "repo": project_info["path"],
                 "timestamp": datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S %z"),
@@ -82,6 +86,7 @@ def gather_changes_from_subprojects(root_dir, duration):
                 "type": project_info["type"],
                 "hash": hash,
                 "message": subject,
+                "branch_type": branch_type,  # 'M' for master/main, 'B' for other branches
                 "intention": intention_from_message(subject),
                 "risk": risk_from_message(subject)
             }]
@@ -91,8 +96,24 @@ def gather_changes_from_subprojects(root_dir, duration):
 def project_commits(root_dir, project_info, report_period):
     commit_format_string = f"%ci€%h€%s"
     path = root_dir + '/' + project_info["path"]
-    project_changes_cmd = subprocess.run(["sh", "-c",
-                                          f"git fetch >/dev/null && git log origin/HEAD --format='{commit_format_string}' --since='{report_period}'"],
-                                         cwd=path, stdout=subprocess.PIPE, text=True)
+    project_changes_cmd = subprocess.run(
+        ["sh", "-c",
+         f"git fetch --all >/dev/null && git log --all --format='{commit_format_string}' --since='{report_period}'"],
+        cwd=path, stdout=subprocess.PIPE, text=True)
     commit_lines = project_changes_cmd.stdout.split('\n')
     return [line.split("€") for line in commit_lines if line != ""]
+
+
+def is_commit_in_branch(root_dir, project_info, commit_hash, branches):
+    """
+    Checks if a given commit is part of a specific branch.
+    """
+    path = root_dir + '/' + project_info["path"]
+
+    for branch in branches:
+        check_branch_cmd = subprocess.run(
+            ["sh", "-c", f"git branch --contains {commit_hash} | grep '{branch}'"],
+            cwd=path, stdout=subprocess.PIPE, text=True)
+        if check_branch_cmd.stdout.strip():  # If the output contains the branch name, it's part of that branch
+            return True
+    return False
