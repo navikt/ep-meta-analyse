@@ -16,7 +16,7 @@ def projects_info(folder):
     for path in paths_from_ls_cmd(folder):
         result += [{
             "path": path,
-            "module": re.sub("^\.$", "meta", re.sub("eessi-pensjon-", "", path)),
+            "module": re.sub(r"^\.$", "meta", re.sub("eessi-pensjon-", "", path)),
             "type": type_from_path(path)
         }]
     return result

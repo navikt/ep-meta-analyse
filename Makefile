@@ -17,8 +17,11 @@ jupyter-output-filter-install: # Installerer et git-filter som fjerner output i 
 	git config --local filter.jupyter-remove-output.clean "(cat %f | jq 'del(.cells[].execution_count)' | jq 'del(.cells[].outputs[]?)' | jq 'del(.cells[].metadata.ExecuteTime)' | jq 'del(.cells[].metadata.execution)' )"
 	git config --local filter.jupyter-remove-output.smudge "cat"
 
-analyse-and-update-notebook: python-bootstrap
-	poetry run jupyter nbconvert --execute --to notebook --inplace "Utviklingsstatistikk.ipynb"
+warm-cache: python-bootstrap ## Populate git commit cache for faster analysis
+	PYTHONPATH=. poetry run python -m lib.warm_cache
+
+analyse-and-update-notebook: python-bootstrap warm-cache
+	PYTHONPATH=. poetry run jupyter nbconvert --execute --to notebook --inplace "Utviklingsstatistikk.ipynb"
 
 generate-notebook-pdf: analyse-and-update-notebook ## Generer Utviklingsstatistikk.pdf fra Utviklingsstatistikk.ipynb
 	poetry run jupyter nbconvert "Utviklingsstatistikk.ipynb" --output "output/Utviklingsstatistikk" --to webpdf --TemplateExporter.exclude_input=True --allow-chromium-download
