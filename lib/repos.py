@@ -16,7 +16,7 @@ def projects_info(folder):
     for path in paths_from_ls_cmd(folder):
         result += [{
             "path": path,
-            "module": re.sub("^\.$", "meta", re.sub("eessi-pensjon-", "", path)),
+            "module": re.sub(r"^\.$", "meta", re.sub("eessi-pensjon-", "", path)),
             "type": type_from_path(path)
         }]
     return result
@@ -25,6 +25,6 @@ def projects_info(folder):
 def type_from_path(project):
     if project.startswith(".") or project.startswith("ep-meta-"):
         return "meta"
-    if project.startswith("eessi-pensjon-") and project != "eessi-pensjon-ui":
+    if project.startswith("eessi-pensjon-"):
         return "app"
     return "library"

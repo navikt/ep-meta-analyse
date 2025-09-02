@@ -3,6 +3,7 @@ commit-stats.csv
 .ipynb_checkpoints/
 
 output/
+.cache/
 
 # We're not concerned with repeatable builds
 poetry.lock
