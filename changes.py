@@ -39,15 +39,22 @@ intention_keys = {k for k in intentions if k != "*"}
 all_intention_keys = intention_keys | {k.lower() for k in intention_keys}
 intention_pattern = re.compile(rf'^([{ "".join(all_intention_keys)}])([ !\-])')
 
+def not_revert(change):
+    return "message" in change and not change["message"].lower().startswith("revert")
+
 risky_changes = [
     c for c in changes
-    if 3 <= int(c.get("risk", 0)) <= 5 and c["message"] and intention_pattern.match(c["message"])
+    if 3 <= int(c.get("risk", 0)) <= 5
+    and intention_pattern.match(c.get("message", ""))
+    and not_revert(c)
 ]
 
 unknown_changes = [
     c for c in changes
-    if not (c["message"] and intention_pattern.match(c["message"]))
+    if not intention_pattern.match(c.get("message", ""))
+    and not_revert(c)
 ]
+
 report_part("Highlight: Risky changes", risky_changes, lambda change: True)
 report_part("Changes with unknown intention", unknown_changes, lambda change: True)
 report_part("Feature and bugfix changes", changes, lambda change: change["intention"] in {"F", "B"})
