@@ -4,6 +4,7 @@ commit-stats.csv
 
 output/
 .cache/
+.gradle/
 
 # We're not concerned with repeatable builds
 poetry.lock
